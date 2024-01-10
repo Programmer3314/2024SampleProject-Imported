@@ -144,28 +144,28 @@ public class Claw extends SubsystemBase {
     // @Override
     // public MMStateMachineState calcNextState() {
     // return this;
-    // // if (hasHomed) {
-    // // return sSpeed;
-    // // }
-    // // if (rC.intakeSubsystem.getArmExtend() < startUpPosition -
-    // // Constants.Arm.Extend.safetyDistance) {
-    // // nextState = HomeStates.Speed;
-    // // }
-    // // if (rC.intakeSubsystem.getCloseToHomeSensor()
-    // // || ((rC.intakeSubsystem.getArmExtend() <
+    // if (hasHomed) {
+    // return sSpeed;
+    // }
+    // if (rC.intakeSubsystem.getArmExtend() < startUpPosition -
+    // Constants.Arm.Extend.safetyDistance) {
+    // nextState = HomeStates.Speed;
+    // }
+    // if (rC.intakeSubsystem.getCloseToHomeSensor()
+    // || ((rC.intakeSubsystem.getArmExtend() <
     // Constants.Arm.Extend.safetyDistance)
-    // // && hasHomed)) {
-    // // nextState = HomeStates.MoveToHome;
-    // // }
-    // // if (rC.intakeSubsystem.getHomeSensor()) {
-    // // nextState = HomeStates.Home;
-    // // }
+    // && hasHomed)) {
+    // nextState = HomeStates.MoveToHome;
+    // }
+    // if (rC.intakeSubsystem.getHomeSensor()) {
+    // nextState = HomeStates.Home;
+    // }
     // }
 
     // @Override
     // public void transitionTo(MMStateMachineState previousState) {
-    // // rC.intakeSubsystem.setHomeSlow();
-    // // startUpPosition = rC.intakeSubsystem.getArmExtend();
+    // rC.intakeSubsystem.setHomeSlow();
+    // startUpPosition = rC.intakeSubsystem.getArmExtend();
     // }
 
     // };
