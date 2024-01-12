@@ -40,9 +40,8 @@ public class MMController extends CommandXboxController {
             v = (v - deadzone) / (1 - deadzone);
             v = v * v;
 
-        } else if (v <= deadzone) { // TODO: PRIORITY this looks wrong too.
-            // TODO: PRIORITY Check this with numbers... It just looks wrong. 
-            v = (-1) * ((v - deadzone) / (1 - deadzone));
+        } else if (v <= -deadzone) {
+            v = ((v + deadzone) / (1 - deadzone));
             v = v * -v;
         }
         return v;
