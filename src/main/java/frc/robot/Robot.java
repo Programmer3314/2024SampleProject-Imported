@@ -27,14 +27,17 @@ public class Robot extends TimedRobot {
 
   private final Field2d field = new Field2d();
 
+  public static int visionUpdate = 0;
+
   @Override
   public void robotInit() {
 
     m_robotContainer = new RobotContainer();
 
-    SmartDashboard.putData("Field", field);
-    Shuffleboard.getTab("Field").addString("pose", () -> m_robotContainer.drivetrain.getState().Pose.toString())
-        .withWidget(BuiltInWidgets.kField);
+    SmartDashboard.putData("FieldX", field);
+    // Shuffleboard.getTab("Field").addString("pose", () ->
+    // m_robotContainer.drivetrain.getState().Pose.toString())
+    // .withWidget(BuiltInWidgets.kField);
   }
 
   @Override
@@ -42,17 +45,22 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     if (true) {
-      var lastResult = LimelightHelpers.getLatestResults("limelight-claw").targetingResults;
-
-      Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
-
-      if (lastResult.valid) {
-        m_robotContainer.drivetrain.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
-      }
+      var lastResult = LimelightHelpers.getLatestResults("limelight-right").targetingResults;
       Pose2d pose = m_robotContainer.drivetrain.getState().Pose;
 
+      if (lastResult.valid && lastResult.targets_Fiducials.length > 0) {
+        Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
+        if (visionUpdate < 50 || pose.minus(llPose).getTranslation().getNorm() < 1) {
+          m_robotContainer.drivetrain.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
+          visionUpdate++;
+        }
+      }
+      
       field.setRobotPose(pose);
+      SmartDashboard.putString("MMpose", pose.toString());
+
     }
+
   }
 
   @Override

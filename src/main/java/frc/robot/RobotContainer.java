@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.MMUtilities.MMController;
+import frc.robot.commands.GoShoot;
 import frc.robot.commands.GrabCone;
 import frc.robot.commands.ShootTheConeOut;
 import frc.robot.generated.TunerConstants;
@@ -32,7 +33,7 @@ public class RobotContainer {
   final double MaxAngularRate = Math.PI; // Half a rotation per second max angular velocity
 
   MMController joystick = new MMController(0, .1 / 2); // My joystick
-  CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+  public CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
   // TODO: go back to static Claw
   public Claw claw = new Claw();
   SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric();
@@ -41,7 +42,7 @@ public class RobotContainer {
   SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   Telemetry logger = new Telemetry(MaxSpeed);
 
-  // private final SendableChooser<Command> autoChooser;
+  private final SendableChooser<Command> autoChooser;
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private void configureBindings() {
@@ -54,15 +55,16 @@ public class RobotContainer {
 
     // joystick.y().whileTrue(new ShootTheConeOut(this));
     // joystick.x().whileTrue(new GrabCone(this));
+    joystick.b().whileTrue(new GoShoot(this));
 
     joystick.y().whileTrue(new InstantCommand(
         () -> claw.armExtensionRot(30)));
     joystick.x().whileTrue(new InstantCommand(
         () -> claw.armExtensionRot(0)));
 
-    joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    joystick.b().whileTrue(drivetrain
-        .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
+    // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+    // joystick.b().whileTrue(drivetrain
+        // .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
@@ -90,9 +92,11 @@ public class RobotContainer {
     NamedCommands.registerCommand("grabCone", new GrabCone(this));
     // Set Up Autochooser
     // TODO: review AutoBuilder to put all autos in dropdown
+
+
     // Default auto will be `Commands.none()`
-    // autoChooser = AutoBuilder.buildAutoChooser();
-    // SmartDashboard.putData("Auto Mode", autoChooser);
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Mode", autoChooser);
   }
 
   public Command getAutonomousCommand() {
@@ -101,10 +105,10 @@ public class RobotContainer {
     //
     // PathPlanner
     //
-    return new PathPlannerAuto("pickup_dropCone");
+    // return new PathPlannerAuto("2024TestAuto01");
     // return new PathPlannerAuto("TestAuto");
     // ALternate from chooser
-    // return autoChooser.getSelected();
+    return autoChooser.getSelected();
 
   }
 }
