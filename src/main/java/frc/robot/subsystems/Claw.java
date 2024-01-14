@@ -11,6 +11,8 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 
 public class Claw extends SubsystemBase {
 
@@ -33,12 +36,14 @@ public class Claw extends SubsystemBase {
 
     DoubleSolenoid pinch = new DoubleSolenoid(1, PneumaticsModuleType.CTREPCM,
             5, 4);
+public RobotContainer rc; 
 
-    public Claw() {
+    public Claw(RobotContainer rc) {
         configClawMotor();
         configArmExtendMotor();
         armExtendMotor.setPosition(0);
         armExtensionRot(0);
+        this.rc = rc;
     }
 
     // TODO: WARNING Constants changed = review formulas for constants
@@ -79,6 +84,12 @@ public class Claw extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Arm Rotations", armExtendMotor.getPosition().getValue());
         SmartDashboard.putNumber("Arm Velocity", armExtendMotor.getVelocity().getValue());
+    }
+
+    public void distExtender(){
+        Pose2d currentPose = rc.drivetrain.getState().Pose;
+        Translation2d target = new Translation2d(15.2,5.5);
+        double distance = currentPose.getTranslation().minus(target).getNorm();
     }
 
     public void armExtensionRot(double rotations) {
