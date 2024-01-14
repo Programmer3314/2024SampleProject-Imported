@@ -7,8 +7,11 @@ package frc.robot;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -28,6 +31,8 @@ public class Robot extends TimedRobot {
   private final Field2d field = new Field2d();
 
   public static int visionUpdate = 0;
+
+  public static DriverStation.Alliance alliance;
 
   @Override
   public void robotInit() {
@@ -50,12 +55,13 @@ public class Robot extends TimedRobot {
 
       if (lastResult.valid && lastResult.targets_Fiducials.length > 0) {
         Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
+        SmartDashboard.putString("llPose", llPose.toString());
         if (visionUpdate < 50 || pose.minus(llPose).getTranslation().getNorm() < 1) {
           m_robotContainer.drivetrain.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
           visionUpdate++;
         }
       }
-      
+
       field.setRobotPose(pose);
       SmartDashboard.putString("MMpose", pose.toString());
 
@@ -69,6 +75,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
+    if (alliance == null) {
+      var allianceAttempt = DriverStation.getAlliance();
+      if (allianceAttempt.isPresent()) {
+        alliance = allianceAttempt.get();
+        SmartDashboard.putString("alliance", alliance.toString());
+      }
+    }
   }
 
   @Override
@@ -77,6 +90,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+
+    visionUpdate = 0;
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -104,6 +119,7 @@ public class Robot extends TimedRobot {
     DataLogManager.start();
     // // Record both DS control and joystick data
     DriverStation.startDataLog(DataLogManager.getLog());
+    visionUpdate = 0;
 
   }
 
@@ -145,5 +161,26 @@ public class Robot extends TimedRobot {
     if (!status.isOK()) {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
+  }
+
+  public static Translation2d convertTran(Translation2d translation) {
+    if (alliance.equals(DriverStation.Alliance.Red)) {
+      return GeometryUtil.flipFieldPosition(translation);
+    }
+    return translation;
+  }
+
+  public static Rotation2d convertRot(Rotation2d rotation) {
+    if (alliance.equals(DriverStation.Alliance.Red)) {
+      return GeometryUtil.flipFieldRotation(rotation);
+    }
+    return rotation;
+  }
+
+  public static Pose2d convertPose(Pose2d pose){
+    if (alliance.equals(DriverStation.Alliance.Red)) {
+      return GeometryUtil.flipFieldPose(pose);
+    }
+    return pose;
   }
 }

@@ -35,7 +35,7 @@ public class RobotContainer {
   MMController joystick = new MMController(0, .1 / 2); // My joystick
   public CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
   // TODO: go back to static Claw
-  public Claw claw = new Claw();
+  public Claw claw = new Claw(this);
   SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric();
   // .withIsOpenLoop(true);
   SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -57,10 +57,10 @@ public class RobotContainer {
     // joystick.x().whileTrue(new GrabCone(this));
     joystick.b().whileTrue(new GoShoot(this));
 
-    joystick.y().whileTrue(new InstantCommand(
-        () -> claw.armExtensionRot(30)));
-    joystick.x().whileTrue(new InstantCommand(
-        () -> claw.armExtensionRot(0)));
+    // joystick.y().whileTrue(new InstantCommand(
+    //     () -> claw.armExtensionRot(30)));
+    // joystick.x().whileTrue(new InstantCommand(
+    //     () -> claw.armExtensionRot(0)));
 
     // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     // joystick.b().whileTrue(drivetrain

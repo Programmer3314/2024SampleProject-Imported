@@ -11,6 +11,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -84,12 +85,17 @@ public RobotContainer rc;
     public void periodic() {
         SmartDashboard.putNumber("Arm Rotations", armExtendMotor.getPosition().getValue());
         SmartDashboard.putNumber("Arm Velocity", armExtendMotor.getVelocity().getValue());
+        distExtender();
     }
 
     public void distExtender(){
         Pose2d currentPose = rc.drivetrain.getState().Pose;
-        Translation2d target = new Translation2d(15.2,5.5);
+        Translation2d target = Robot.convertTran(new Translation2d(1.36,5.55));
         double distance = currentPose.getTranslation().minus(target).getNorm();
+        distance *= (20/2);
+        distance = MathUtil.clamp(distance, 0, 20);
+        armExtensionIn(distance);
+        SmartDashboard.putNumber("Arm Extend Distance", distance);
     }
 
     public void armExtensionRot(double rotations) {
